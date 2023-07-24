@@ -41,4 +41,16 @@ pub const roller = struct {
     pub fn retSet() [10]u8 {
         return diceSet;
     }
+
+    pub fn reset() void {
+        var i: u8 = 0;
+
+        while (i < diceSet.len) : (i += 1) {
+            zeroOut(&diceSet[i]);
+        }
+    }
+
+    fn zeroOut(x: *u8) void {
+        x.* = 0;
+    }
 };
