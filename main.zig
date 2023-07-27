@@ -1,15 +1,29 @@
 const std = @import("std");
 const utils = @import("utils.zig");
 
-const reader = std.io.getStdIn().reader();
-const writer = std.io.getStdOut().writer();
+const stdout = std.io.getStdOut();
+var bw = std.io.bufferedWriter(stdout.writer());
+const w = bw.writer();
+
+const stdin = std.io.getStdIn();
+var br = std.io.bufferedReader(stdin.reader());
+var r = br.reader();
 
 var buffer: [10]u8 = undefined;
+var msg: u32 = undefined;
 
 const roller = utils.roller;
 
+fn askNum() !u8 {
+    if (try r.readUntilDelimiterOrEof(&buffer, '\n')) |input| {
+        return std.fmt.parseInt(u8, input, 10);
+    } else {
+        return error.InvalidParam;
+    }
+}
+
 pub fn main() !void {
-    try writer.print("Hello, {s}!\n", .{"World"});
+    try w.print("Hello, {s}!\n", .{"World"});
 
     //Test: Roll 3d6
     try roller.init();
@@ -18,46 +32,52 @@ pub fn main() !void {
     result = roller.roller(3, 6);
     resultSet = roller.retSet();
 
-    try writer.print("The result of the test is : {}\n", .{result});
-    try writer.print("The set of the dice reads: {any}\n", .{resultSet});
+    try w.print("The result of the test is : {}\n", .{result});
+    try bw.flush();
+    try w.print("The set of the dice reads: {any}\n", .{resultSet});
+    try bw.flush();
 
-    try writer.print("Testing reset...\n", .{});
+    try w.print("Testing reset...\n", .{});
+    try bw.flush();
     roller.reset();
     resultSet = roller.retSet();
 
-    try writer.print("The set of the dice reads: {any}\n", .{resultSet});
-    try writer.print("Rolling again...\n", .{});
+    try w.print("The set of the dice reads: {any}\n", .{resultSet});
+    try bw.flush();
+    try w.print("Rolling again...\n", .{});
+    try bw.flush();
 
     result = roller.roller(5, 10);
     resultSet = roller.retSet();
 
-    try writer.print("The result of the test is : {}\n", .{result});
-    try writer.print("The set of the dice reads: {any}\n", .{resultSet});
+    try w.print("The result of the test is : {}\n", .{result});
+    try bw.flush();
+    try w.print("The set of the dice reads: {any}\n", .{resultSet});
+    try bw.flush();
     roller.reset();
 
     //Test StdIn
     var dieNum: u8 = undefined;
     var dieType: u8 = undefined;
 
-    try writer.print("Testing Standard In...\n", .{});
-    try writer.print("Select number of dice between 1-10: ", .{});
+    try w.print("Testing Standard In...\n", .{});
+    try bw.flush();
+    try w.print("Select number of dice between 1-10: ", .{});
+    try bw.flush();
 
-    if (try reader.readUntilDelimiterOrEof(buffer[0..], '\n')) |input| {
-        dieNum = try std.fmt.parseInt(u8, input, 10);
-    } else {
-        error.InvalidParam;
-    }
+    dieNum = try askNum();
+    buffer = undefined;
 
-    try writer.print("Select type of dice from 4, 6, 8, 10, 12, or 20: ", .{});
-    if (try reader.readUntilDelimiterOrEof(buffer[0..], '\n')) |input| {
-        dieType = try std.fmt.parseInt(u8, input, 10);
-    } else {
-        error.InvalidParam;
-    }
+    try w.print("Select type of dice from 4, 6, 8, 10, 12, or 20: ", .{});
+    try bw.flush();
+    dieType = try askNum();
+    buffer = undefined;
 
     result = roller.roller(dieNum, dieType);
     resultSet = roller.retSet();
 
-    try writer.print("The result of the test is : {}\n", .{result});
-    try writer.print("The set of the dice reads: {any}\n", .{resultSet});
+    try w.print("The result of the test is : {}\n", .{result});
+    try bw.flush();
+    try w.print("The set of the dice reads: {any}\n", .{resultSet});
+    try bw.flush();
 }
