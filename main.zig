@@ -1,45 +1,39 @@
 const std = @import("std");
 const utils = @import("utils.zig");
 
-const stdout = std.io.getStdOut();
-var bw = std.io.bufferedWriter(stdout.writer());
-const w = bw.writer();
-
-const stdin = std.io.getStdIn();
-var br = std.io.bufferedReader(stdin.reader());
-var r = br.reader();
+const stdout = std.io.getStdOut().writer();
+const stdin = std.io.getStdIn().reader();
 
 var buffer: [10]u8 = undefined;
 
 const roller = utils.roller;
 
 fn askNum() !u8 {
-    var result: u8 = undefined;
-    try bw.flush();
+    //var result: u8 = undefined;
 
     while (true) {
-        try w.print("Selection: ", .{});
-        if (try r.readUntilDelimiterOrEof(&buffer, '\n')) |input| {
-            if (std.fmt.parseInt(u8, input, 10)) |stmt| {
-                result = stmt;
-            } else |err| {
-                if (err == error.InvalidCharacter) {
-                    try w.print("\nInvalid Character Detected. Try again.\n", .{});
-                    //return err;
-                } else if (err == error.Overflow) {
-                    try w.print("\nOverflow Detected. Try again.\n", .{});
-                    //return err;
-                }
-            }
-        } else {
-            return error.InvalidParam;
-        }
+        try stdout.print("Selection: ", .{});
+        const bare_line = try stdin.readUntilDelimiterAlloc(std.heap.page_allocator, '\n', 80);
+        defer std.heap.page_allocator.free(bare_line);
+
+        const line = std.mem.trim(u8, bare_line, "\r");
+
+        const result = std.fmt.parseInt(u8, line, 10) catch |err| switch (err) {
+            error.Overflow => {
+                try stdout.print("Number too large.\n", .{});
+                continue;
+            },
+            error.InvalidCharacter => {
+                try stdout.print("Invalid Character.\n", .{});
+                continue;
+            },
+        };
         return result;
     }
 }
 
 pub fn main() !void {
-    try w.print("Hello, {s}!\n", .{"World"});
+    try stdout.print("Hello, {s}!\n", .{"World"});
 
     //Test: Roll 3d6
     try roller.init();
@@ -48,52 +42,43 @@ pub fn main() !void {
     result = roller.roller(3, 6);
     resultSet = roller.retSet();
 
-    try w.print("The result of the test is : {}\n", .{result});
-    try bw.flush();
-    try w.print("The set of the dice reads: {any}\n", .{resultSet});
-    try bw.flush();
+    try stdout.print("The result of the test is : {}\n", .{result});
+    //try bw.flush();
+    try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
 
-    try w.print("Testing reset...\n", .{});
-    try bw.flush();
+    try stdout.print("Testing reset...\n", .{});
     roller.reset();
     resultSet = roller.retSet();
 
-    try w.print("The set of the dice reads: {any}\n", .{resultSet});
-    try bw.flush();
-    try w.print("Rolling again...\n", .{});
-    try bw.flush();
+    try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
+    //try bw.flush();
+    try stdout.print("Rolling again...\n", .{});
 
     result = roller.roller(5, 10);
     resultSet = roller.retSet();
 
-    try w.print("The result of the test is : {}\n", .{result});
-    try bw.flush();
-    try w.print("The set of the dice reads: {any}\n", .{resultSet});
-    try bw.flush();
+    try stdout.print("The result of the test is : {}\n", .{result});
+    try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
+    //try bw.flush();
     roller.reset();
 
     //Test StdIn
     var dieNum: u8 = undefined;
     var dieType: u8 = undefined;
 
-    try w.print("Testing Standard In...\n", .{});
-    try bw.flush();
-    try w.print("Select number of dice between 1-10: ", .{});
-    try bw.flush();
+    try stdout.print("Testing Standard In...\n", .{});
+    try stdout.print("Select number of dice between 1-10: \n", .{});
 
     dieNum = try askNum();
     buffer = undefined;
 
-    try w.print("Select type of dice from 4, 6, 8, 10, 12, or 20: ", .{});
-    try bw.flush();
+    try stdout.print("Select type of dice from 4, 6, 8, 10, 12, or 20: \n", .{});
     dieType = try askNum();
     buffer = undefined;
 
     result = roller.roller(dieNum, dieType);
     resultSet = roller.retSet();
 
-    try w.print("The result of the test is : {}\n", .{result});
-    try bw.flush();
-    try w.print("The set of the dice reads: {any}\n", .{resultSet});
-    try bw.flush();
+    try stdout.print("The result of the test is : {}\n", .{result});
+    try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
 }
