@@ -10,15 +10,31 @@ var br = std.io.bufferedReader(stdin.reader());
 var r = br.reader();
 
 var buffer: [10]u8 = undefined;
-var msg: u32 = undefined;
 
 const roller = utils.roller;
 
 fn askNum() !u8 {
-    if (try r.readUntilDelimiterOrEof(&buffer, '\n')) |input| {
-        return std.fmt.parseInt(u8, input, 10);
-    } else {
-        return error.InvalidParam;
+    var result: u8 = undefined;
+    try bw.flush();
+
+    while (true) {
+        try w.print("Selection: ", .{});
+        if (try r.readUntilDelimiterOrEof(&buffer, '\n')) |input| {
+            if (std.fmt.parseInt(u8, input, 10)) |stmt| {
+                result = stmt;
+            } else |err| {
+                if (err == error.InvalidCharacter) {
+                    try w.print("\nInvalid Character Detected. Try again.\n", .{});
+                    //return err;
+                } else if (err == error.Overflow) {
+                    try w.print("\nOverflow Detected. Try again.\n", .{});
+                    //return err;
+                }
+            }
+        } else {
+            return error.InvalidParam;
+        }
+        return result;
     }
 }
 
