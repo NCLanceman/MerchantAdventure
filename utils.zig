@@ -15,7 +15,7 @@ pub const roller = struct {
         });
     }
 
-    pub fn roller(diceNum: u8, diceType: u8) u8 {
+    pub fn dieThrow(diceNum: u8, diceType: u8) u8 {
         var i: u8 = 0;
         var result: u8 = 0;
         var setDice: u8 = undefined;

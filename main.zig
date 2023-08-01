@@ -4,8 +4,6 @@ const utils = @import("utils.zig");
 const stdout = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
 
-var buffer: [10]u8 = undefined;
-
 const roller = utils.roller;
 
 fn askNum() !u8 {
@@ -39,11 +37,10 @@ pub fn main() !void {
     try roller.init();
     var result: u8 = 0;
     var resultSet: [10]u8 = undefined;
-    result = roller.roller(3, 6);
+    result = roller.dieThrow(3, 6);
     resultSet = roller.retSet();
 
     try stdout.print("The result of the test is : {}\n", .{result});
-    //try bw.flush();
     try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
 
     try stdout.print("Testing reset...\n", .{});
@@ -51,15 +48,13 @@ pub fn main() !void {
     resultSet = roller.retSet();
 
     try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
-    //try bw.flush();
     try stdout.print("Rolling again...\n", .{});
 
-    result = roller.roller(5, 10);
+    result = roller.dieThrow(5, 10);
     resultSet = roller.retSet();
 
     try stdout.print("The result of the test is : {}\n", .{result});
     try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
-    //try bw.flush();
     roller.reset();
 
     //Test StdIn
@@ -70,13 +65,11 @@ pub fn main() !void {
     try stdout.print("Select number of dice between 1-10: \n", .{});
 
     dieNum = try askNum();
-    buffer = undefined;
 
     try stdout.print("Select type of dice from 4, 6, 8, 10, 12, or 20: \n", .{});
     dieType = try askNum();
-    buffer = undefined;
 
-    result = roller.roller(dieNum, dieType);
+    result = roller.dieThrow(dieNum, dieType);
     resultSet = roller.retSet();
 
     try stdout.print("The result of the test is : {}\n", .{result});
