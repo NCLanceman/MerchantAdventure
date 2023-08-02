@@ -1,5 +1,6 @@
 const std = @import("std");
 const utils = @import("utils.zig");
+const world = @import("world.zig");
 
 const stdout = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
@@ -74,4 +75,8 @@ pub fn main() !void {
 
     try stdout.print("The result of the test is : {}\n", .{result});
     try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
+
+    //Test Calendar
+    try stdout.print("Testing new calendar...\n", .{});
+    try world.Calendar.printDate();
 }
