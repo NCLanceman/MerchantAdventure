@@ -77,8 +77,20 @@ pub const Calendar = struct {
         }
     }
 
+    fn getSeason() [:0]const u8 {
+        var result: u16 = currentDay / 105;
+
+        switch (result) {
+            0 => return "Spring",
+            1 => return "Summer",
+            2 => return "Fall",
+            3 => return "Winter",
+            else => unreachable,
+        }
+    }
+
     pub fn printDate() !void {
-        try stdout.print("Day is {}, Year is {}\n", .{ currentDay, currentYear });
+        try stdout.print("Day: {}, Year: {}, Season: {s}\n", .{ currentDay, currentYear, getSeason() });
         try stdout.print("The date is {s} {}, {}\n", .{ getMonth(), getDay(), currentYear });
     }
 };

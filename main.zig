@@ -88,6 +88,10 @@ pub fn main() !void {
     world.Calendar.addDay(50);
     try world.Calendar.printDate();
 
+    try stdout.print("Advancing to next season...\n", .{});
+    world.Calendar.addDay(105);
+    try world.Calendar.printDate();
+
     try stdout.print("Adding a year...\n", .{});
     world.Calendar.addDay(420);
     try world.Calendar.printDate();
