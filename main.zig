@@ -79,4 +79,16 @@ pub fn main() !void {
     //Test Calendar
     try stdout.print("Testing new calendar...\n", .{});
     try world.Calendar.printDate();
+
+    try stdout.print("Adding fifteen days...\n", .{});
+    world.Calendar.addDay(15);
+    try world.Calendar.printDate();
+
+    try stdout.print("Adding one hundred days...\n", .{});
+    world.Calendar.addDay(50);
+    try world.Calendar.printDate();
+
+    try stdout.print("Adding a year...\n", .{});
+    world.Calendar.addDay(420);
+    try world.Calendar.printDate();
 }

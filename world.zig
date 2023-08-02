@@ -61,12 +61,16 @@ pub const Calendar = struct {
         return result;
     }
 
-    fn addDay(days: u16) void {
+    fn getDay() u16 {
+        return (currentDay % 28);
+    }
+
+    pub fn addDay(days: u16) void {
         var placeholder: u16 = currentDay + days;
         if (placeholder > 419) {
             //Add years
             currentYear += (placeholder / 420);
-            currentDay += (placeholder % 420);
+            currentDay = (placeholder % 420);
             //Add correct days
         } else {
             currentDay = placeholder;
@@ -74,6 +78,7 @@ pub const Calendar = struct {
     }
 
     pub fn printDate() !void {
-        try stdout.print("{s} {}, {}\n", .{ getMonth(), currentDay, currentYear });
+        try stdout.print("Day is {}, Year is {}\n", .{ currentDay, currentYear });
+        try stdout.print("The date is {s} {}, {}\n", .{ getMonth(), getDay(), currentYear });
     }
 };
