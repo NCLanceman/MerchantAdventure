@@ -44,20 +44,6 @@ pub fn main() !void {
     try stdout.print("The result of the test is : {}\n", .{result});
     try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
 
-    try stdout.print("Testing reset...\n", .{});
-    roller.reset();
-    resultSet = roller.retSet();
-
-    try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
-    try stdout.print("Rolling again...\n", .{});
-
-    result = roller.dieThrow(5, 10);
-    resultSet = roller.retSet();
-
-    try stdout.print("The result of the test is : {}\n", .{result});
-    try stdout.print("The set of the dice reads: {any}\n", .{resultSet});
-    roller.reset();
-
     //Test StdIn
     var dieNum: u8 = undefined;
     var dieType: u8 = undefined;

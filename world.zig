@@ -3,6 +3,7 @@
 //for traversing the world and doing stuff in it.
 
 const std = @import("std");
+const utils = @import("utils.zig");
 
 const stdout = std.io.getStdOut().writer();
 
@@ -14,6 +15,9 @@ const stdout = std.io.getStdOut().writer();
 //additional villages, caravanserai, waystations, and so on.
 //Knock on effects: Regions, biomes, areas.
 //Possibly change the map.
+pub const WorldMap = struct {
+    var currentLocation: *Location = undefined;
+};
 
 //Elements of a town:
 //Size (population)
@@ -21,13 +25,64 @@ const stdout = std.io.getStdOut().writer();
 //Economic type
 //Governance
 //Connections
+pub const Location = struct {
+    name: [:0]u8 = undefined,
+    biome: Biome = undefined,
+    population: u32 = undefined,
+    culture: [:0]u8 = undefined,
+    econType: [:0]u8 = undefined,
+    governance: [:0]u8 = undefined,
+    connections: ?[]Connection = null,
 
+    pub fn printLocationBrief() void {
+        std.debug.print(
+            \\Current Location: \n
+            \\Name: {s}\n
+            \\Population: {}\n
+            \\Biome: {any}
+        , .{ .name, .population, .biome });
+    }
+};
+
+pub const Connection = struct {
+    const destinaton: *Location = undefined;
+    const distance: u16 = undefined;
+    const terrain: [:0]u8 = undefined;
+};
 //Features
 //Seasons and Clock
 //The game goes from Early Spring to Winter. Make as much money as you can
 //before you go home!
 //Knock on effects: Weather?
+pub const Biome = enum {
+    temperateForest,
+    tundra,
+    grassland,
+    borealForest,
+    mediterranian,
+};
 
+pub const Weather = enum {
+    Clear,
+    Cloudy,
+    Rain,
+    Thunderstorm,
+    Windy,
+    Snow,
+    Blizzard,
+};
+
+pub const Climate = struct {
+    var currentWeather: [:0]u8 = undefined;
+    var currentBiome: Biome = undefined;
+    const climateRoller = utils.roller;
+
+    pub fn init() void {
+        try climateRoller.init();
+    }
+
+    pub fn rollWeather() [:0]u8 {}
+};
 //Calendar
 //For now, impliment the standard Calendar, then attempt something cool.
 //YOU CANNOT HAVE A MEANINGFUL CAMPAIGN IF STRICT TIME KEEPING IS NOT OBSERVED.
@@ -37,6 +92,7 @@ const stdout = std.io.getStdOut().writer();
 pub const Calendar = struct {
     var currentDay: u16 = 1;
     var currentYear: u16 = 1240;
+    var currentSeason: [:0]const u8 = "Spring";
 
     fn getMonth() [:0]const u8 {
         const result = switch ((currentDay / 28) + 1) {
@@ -75,6 +131,7 @@ pub const Calendar = struct {
         } else {
             currentDay = placeholder;
         }
+        currentSeason = getSeason();
     }
 
     fn getSeason() [:0]const u8 {
@@ -90,7 +147,7 @@ pub const Calendar = struct {
     }
 
     pub fn printDate() !void {
-        try stdout.print("Day: {}, Year: {}, Season: {s}\n", .{ currentDay, currentYear, getSeason() });
+        try stdout.print("Day: {}, Year: {}, Season: {s}\n", .{ currentDay, currentYear, currentSeason });
         try stdout.print("The date is {s} {}, {}\n", .{ getMonth(), getDay(), currentYear });
     }
 };
