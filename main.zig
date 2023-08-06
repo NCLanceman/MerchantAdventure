@@ -81,4 +81,32 @@ pub fn main() !void {
     try stdout.print("Adding a year...\n", .{});
     world.Calendar.addDay(420);
     try world.Calendar.printDate();
+
+    //Test World
+    var Hatterston = world.Location{
+        .name = "Hatterston",
+        .biome = world.Biome.temperateForest,
+        .population = 500,
+    };
+
+    var PurpleRidgeCity = world.Location{
+        .name = "Purple Ridge City",
+        .biome = world.Biome.borealForest,
+        .population = 1200,
+    };
+
+    const Hatterston_Path = [_]world.Connection{
+        world.Connection{
+            .origin = &Hatterston,
+            .dest = &PurpleRidgeCity,
+            .distance = 7,
+            .terrain = world.Difficulty.marginal,
+        },
+    };
+
+    Hatterston.connections = Hatterston_Path[0..];
+
+    try stdout.print("Testing Hatterston Print method...\n", .{});
+
+    Hatterston.print();
 }

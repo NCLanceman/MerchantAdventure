@@ -7,6 +7,11 @@ const utils = @import("utils.zig");
 
 const stdout = std.io.getStdOut().writer();
 
+const WorldErrors = error{
+    MaxLocationsReached,
+    MaxConnectionsReached,
+};
+
 //World Map
 //City List: Hatterson, Purple Ridge City, Burgsbergs, Hatanniland,
 //Fallen Pine Township, Pextorantal, Silent Rapids, Caninus Megacity 21,
@@ -16,7 +21,36 @@ const stdout = std.io.getStdOut().writer();
 //Knock on effects: Regions, biomes, areas.
 //Possibly change the map.
 pub const WorldMap = struct {
+    const locationLimit: u8 = 50;
     var currentLocation: *Location = undefined;
+    var locations: ?[locationLimit]Location = null;
+    var locationCounter: u8 = 0;
+
+    pub fn addLocation(loc: Location) !void {
+        if (locationCounter < locationLimit) {
+            locations[locationCounter].* = &loc;
+            locationCounter += 1;
+        } else {
+            return WorldErrors.MaxLocationsReached;
+        }
+    }
+
+    pub fn setLocation(loc: *Location) void {
+        currentLocation = &loc;
+    }
+
+    pub fn locationInit() void {
+        currentLocation = &locations[0];
+    }
+
+    pub fn printLocationBrief() void {
+        std.debug.print(
+            \\Current Location: \n
+            \\Name: {s}\n
+            \\Population: {}\n
+            \\Biome: {any}
+        , .{ currentLocation.name, currentLocation.population, currentLocation.biome });
+    }
 };
 
 //Elements of a town:
@@ -26,28 +60,38 @@ pub const WorldMap = struct {
 //Governance
 //Connections
 pub const Location = struct {
-    name: [:0]u8 = undefined,
-    biome: Biome = undefined,
-    population: u32 = undefined,
-    culture: [:0]u8 = undefined,
-    econType: [:0]u8 = undefined,
-    governance: [:0]u8 = undefined,
-    connections: ?[]Connection = null,
+    name: [:0]const u8,
+    biome: Biome,
+    population: u32,
+    connections: []const Connection = undefined,
 
-    pub fn printLocationBrief() void {
+    pub fn print(self: Location) void {
         std.debug.print(
-            \\Current Location: \n
-            \\Name: {s}\n
-            \\Population: {}\n
+            \\Town Name: {s}
             \\Biome: {any}
-        , .{ .name, .population, .biome });
+            \\Population: {}
+            \\Connections:
+        , .{ self.name, self.biome, self.population });
+        for (self.connections) |conn| {
+            std.debug.print("{s}\n", .{conn.dest.name});
+        }
     }
 };
 
 pub const Connection = struct {
-    const destinaton: *Location = undefined;
-    const distance: u16 = undefined;
-    const terrain: [:0]u8 = undefined;
+    origin: *const Location,
+    dest: *const Location,
+    distance: u16,
+    terrain: Difficulty,
+};
+
+pub const Difficulty = enum {
+    easy,
+    marginal,
+    ordinary,
+    difficult,
+    exhausting,
+    impossible,
 };
 //Features
 //Seasons and Clock
@@ -73,7 +117,7 @@ pub const Weather = enum {
 };
 
 pub const Climate = struct {
-    var currentWeather: [:0]u8 = undefined;
+    var currentWeather: [:0]const u8 = undefined;
     var currentBiome: Biome = undefined;
     const climateRoller = utils.roller;
 
@@ -81,7 +125,7 @@ pub const Climate = struct {
         try climateRoller.init();
     }
 
-    pub fn rollWeather() [:0]u8 {}
+    pub fn rollWeather() [:0]const u8 {}
 };
 //Calendar
 //For now, impliment the standard Calendar, then attempt something cool.
