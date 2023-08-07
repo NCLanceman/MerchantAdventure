@@ -45,9 +45,9 @@ pub const WorldMap = struct {
 
     pub fn printLocationBrief() void {
         std.debug.print(
-            \\Current Location: \n
-            \\Name: {s}\n
-            \\Population: {}\n
+            \\Current Location: 
+            \\Name: {s}
+            \\Population: {}
             \\Biome: {any}
         , .{ currentLocation.name, currentLocation.population, currentLocation.biome });
     }
@@ -68,10 +68,10 @@ pub const Location = struct {
     pub fn print(self: Location) void {
         std.debug.print(
             \\Town Name: {s}
-            \\Biome: {any}
+            \\Biome: {s}
             \\Population: {}
             \\Connections:
-        , .{ self.name, self.biome, self.population });
+        , .{ self.name, self.biome.toText(), self.population });
         for (self.connections) |conn| {
             std.debug.print("{s}\n", .{conn.dest.name});
         }
@@ -104,6 +104,16 @@ pub const Biome = enum {
     grassland,
     borealForest,
     mediterranian,
+
+    pub fn toText(self: Biome) [:0]const u8 {
+        switch (self) {
+            Biome.temperateForest => return "Temperate Forest",
+            Biome.tundra => return "Tundra",
+            Biome.grassland => return "Grassland",
+            Biome.borealForest => return "Boreal Forest",
+            Biome.mediterranian => return "Mediterranian",
+        }
+    }
 };
 
 pub const Weather = enum {
