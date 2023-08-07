@@ -21,35 +21,15 @@ const WorldErrors = error{
 //Knock on effects: Regions, biomes, areas.
 //Possibly change the map.
 pub const WorldMap = struct {
-    const locationLimit: u8 = 50;
-    var currentLocation: *Location = undefined;
-    var locations: ?[locationLimit]Location = null;
-    var locationCounter: u8 = 0;
+    currentLocation: *const Location = undefined,
+    locations: []const Location,
 
-    pub fn addLocation(loc: Location) !void {
-        if (locationCounter < locationLimit) {
-            locations[locationCounter].* = &loc;
-            locationCounter += 1;
-        } else {
-            return WorldErrors.MaxLocationsReached;
-        }
+    pub fn setLocation(self: WorldMap, loc: *Location) void {
+        self.currentLocation = &loc;
     }
 
-    pub fn setLocation(loc: *Location) void {
-        currentLocation = &loc;
-    }
-
-    pub fn locationInit() void {
-        currentLocation = &locations[0];
-    }
-
-    pub fn printLocationBrief() void {
-        std.debug.print(
-            \\Current Location: 
-            \\Name: {s}
-            \\Population: {}
-            \\Biome: {any}
-        , .{ currentLocation.name, currentLocation.population, currentLocation.biome });
+    pub fn printLocationBrief(self: WorldMap) void {
+        self.currentLocation.print();
     }
 };
 

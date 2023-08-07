@@ -106,7 +106,13 @@ pub fn main() !void {
 
     Hatterston.connections = Hatterston_Path[0..];
 
-    try stdout.print("Testing Hatterston Print method...\n", .{});
+    const worldLocations = [_]world.Location{ Hatterston, PurpleRidgeCity };
 
+    try stdout.print("Testing Hatterston Print method...\n", .{});
     Hatterston.print();
+
+    try stdout.print("Initializing World Map...\n", .{});
+    var Map = world.WorldMap{ .locations = worldLocations[0..] };
+    Map.currentLocation = &Map.locations[0];
+    Map.printLocationBrief();
 }
