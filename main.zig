@@ -95,24 +95,18 @@ pub fn main() !void {
         .population = 1200,
     };
 
-    const Hatterston_Path = [_]world.Connection{
-        world.Connection{
-            .origin = &Hatterston,
-            .dest = &PurpleRidgeCity,
-            .distance = 7,
-            .terrain = world.Difficulty.marginal,
-        },
-    };
+    const Hatterston_Path = [_]world.Connection{world.makeConnect(&Hatterston, &PurpleRidgeCity, 7, world.Difficulty.marginal)};
 
     Hatterston.connections = Hatterston_Path[0..];
 
     const worldLocations = [_]world.Location{ Hatterston, PurpleRidgeCity };
 
-    try stdout.print("Testing Hatterston Print method...\n", .{});
-    Hatterston.print();
-
     try stdout.print("Initializing World Map...\n", .{});
     var Map = world.WorldMap{ .locations = worldLocations[0..] };
     Map.currentLocation = &Map.locations[0];
+    Map.printLocationBrief();
+
+    try stdout.print("Testing first move...\n", .{});
+    Map.currentLocation = Map.currentLocation.connections[0].dest;
     Map.printLocationBrief();
 }

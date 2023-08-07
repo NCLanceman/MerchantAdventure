@@ -31,6 +31,9 @@ pub const WorldMap = struct {
     pub fn printLocationBrief(self: WorldMap) void {
         self.currentLocation.print();
     }
+
+    //TODO: Add method for traversing from the current location to a new one.
+
 };
 
 //Elements of a town:
@@ -64,6 +67,15 @@ pub const Connection = struct {
     distance: u16,
     terrain: Difficulty,
 };
+
+pub fn makeConnect(start: *Location, end: *Location, dist: u16, terrain: Difficulty) Connection {
+    return Connection{
+        .origin = start,
+        .dest = end,
+        .distance = dist,
+        .terrain = terrain,
+    };
+}
 
 pub const Difficulty = enum {
     easy,
