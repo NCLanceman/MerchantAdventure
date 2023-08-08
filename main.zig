@@ -107,6 +107,6 @@ pub fn main() !void {
     Map.printLocationBrief();
 
     try stdout.print("Testing first move...\n", .{});
-    Map.currentLocation = Map.currentLocation.connections[0].dest;
+    Map.travelToFirstConn();
     Map.printLocationBrief();
 }

@@ -33,7 +33,9 @@ pub const WorldMap = struct {
     }
 
     //TODO: Add method for traversing from the current location to a new one.
-
+    pub fn travelToFirstConn(self: *WorldMap) void {
+        self.currentLocation = self.currentLocation.connections[0].dest;
+    }
 };
 
 //Elements of a town:
@@ -60,6 +62,14 @@ pub const Location = struct {
         }
     }
 };
+
+pub fn makeLoc(townName: [:0]const u8, biome: Biome, pop: u32) Location {
+    return Location{
+        .name = townName,
+        .biome = biome,
+        .population = pop,
+    };
+}
 
 pub const Connection = struct {
     origin: *const Location,
