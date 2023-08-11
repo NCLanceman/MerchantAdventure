@@ -91,6 +91,13 @@ pub fn generateCampaignWorld() void {
     g.connections = g_conn[0..];
     h.connections = h_conn[0..];
     i.connections = i_conn[0..];
+
+    //Testing memory
+    const locArray = [_]Location{ a, b, c, d, e, f, g, h, i, j };
+
+    for (locArray) |loc| {
+        loc.print();
+    }
 }
 
 //Elements of a town:
