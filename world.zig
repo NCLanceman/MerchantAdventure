@@ -7,10 +7,7 @@ const utils = @import("utils.zig");
 
 const stdout = std.io.getStdOut().writer();
 
-const WorldErrors = error{
-    MaxLocationsReached,
-    MaxConnectionsReached,
-};
+const WorldErrors = error{ MaxLocationsReached, MaxConnectionsReached, InvalidConnection };
 
 //World Map
 //City List: Hatterson, Purple Ridge City, Burgsbergs, Hatanniland,
@@ -20,15 +17,34 @@ const WorldErrors = error{
 //additional villages, caravanserai, waystations, and so on.
 //Knock on effects: Regions, biomes, areas.
 //Possibly change the map.
+
+//Undeclared World Map
+var a: Location = undefined;
+var b: Location = undefined;
+var c: Location = undefined;
+var d: Location = undefined;
+var e: Location = undefined;
+var f: Location = undefined;
+var g: Location = undefined;
+var h: Location = undefined;
+var i: Location = undefined;
+var j: Location = undefined;
+
 pub const WorldMap = struct {
     currentLocation: *const Location = undefined,
-    locations: []const Location,
+    locations: []const Location = undefined,
 
-    pub fn setLocation(self: WorldMap, loc: *Location) void {
-        self.currentLocation = &loc;
+    pub fn init(self: *WorldMap) void {
+        generateCampaignWorld();
+        self.locations = &[_]Location{ a, b, c, d, e, f, g, h, i, j };
+        self.currentLocation = &self.locations[0];
     }
 
-    pub fn printLocationBrief(self: WorldMap) void {
+    //pub fn setLocation(self: *WorldMap, loc: *Location) void {
+    //    self.currentLocation = loc;
+    //}
+
+    pub fn printLocationBrief(self: *WorldMap) void {
         self.currentLocation.print();
     }
 
@@ -36,7 +52,46 @@ pub const WorldMap = struct {
     pub fn travelToFirstConn(self: *WorldMap) void {
         self.currentLocation = self.currentLocation.connections[0].dest;
     }
+
+    pub fn printAllLocations(self: *WorldMap) void {
+        for (self.locations) |loc| {
+            loc.print();
+        }
+    }
 };
+
+pub fn generateCampaignWorld() void {
+    a = makeLoc("Hatterston", Biome.temperateForest, 500);
+    b = makeLoc("Purple Ridge City", Biome.borealForest, 1200);
+    c = makeLoc("Burgsbergs", Biome.tundra, 400);
+    d = makeLoc("Hatanniland", Biome.grassland, 700);
+    e = makeLoc("Fallen Pine Township", Biome.temperateForest, 600);
+    f = makeLoc("Pexorantal", Biome.temperateForest, 1300);
+    g = makeLoc("Silent Rapids", Biome.temperateForest, 600);
+    h = makeLoc("Caninus Megacity 21", Biome.mediterranian, 1500);
+    i = makeLoc("Tansho-Nagashi City", Biome.temperateForest, 1200);
+    j = makeLoc("Fooksalot", Biome.mediterranian, 700);
+
+    const a_conn = [_]Connection{makeConnect(&a, &b, 7, Difficulty.marginal)};
+    const b_conn = [_]Connection{ makeConnect(&b, &c, 5, Difficulty.ordinary), makeConnect(&b, &d, 10, Difficulty.difficult) };
+    const c_conn = [_]Connection{makeConnect(&c, &d, 4, Difficulty.ordinary)};
+    const d_conn = [_]Connection{makeConnect(&d, &e, 10, Difficulty.ordinary)};
+    const e_conn = [_]Connection{ makeConnect(&e, &f, 3, Difficulty.difficult), makeConnect(&e, &g, 10, Difficulty.marginal) };
+    const f_conn = [_]Connection{makeConnect(&f, &g, 4, Difficulty.ordinary)};
+    const g_conn = [_]Connection{ makeConnect(&g, &h, 7, Difficulty.difficult), makeConnect(&g, &i, 7, Difficulty.ordinary) };
+    const h_conn = [_]Connection{makeConnect(&h, &j, 8, Difficulty.exhausting)};
+    const i_conn = [_]Connection{makeConnect(&i, &j, 5, Difficulty.difficult)};
+
+    a.connections = a_conn[0..];
+    b.connections = b_conn[0..];
+    c.connections = c_conn[0..];
+    d.connections = d_conn[0..];
+    e.connections = e_conn[0..];
+    f.connections = f_conn[0..];
+    g.connections = g_conn[0..];
+    h.connections = h_conn[0..];
+    i.connections = i_conn[0..];
+}
 
 //Elements of a town:
 //Size (population)

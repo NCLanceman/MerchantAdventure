@@ -83,30 +83,15 @@ pub fn main() !void {
     try world.Calendar.printDate();
 
     //Test World
-    var Hatterston = world.Location{
-        .name = "Hatterston",
-        .biome = world.Biome.temperateForest,
-        .population = 500,
-    };
 
-    var PurpleRidgeCity = world.Location{
-        .name = "Purple Ridge City",
-        .biome = world.Biome.borealForest,
-        .population = 1200,
-    };
-
-    const Hatterston_Path = [_]world.Connection{world.makeConnect(&Hatterston, &PurpleRidgeCity, 7, world.Difficulty.marginal)};
-
-    Hatterston.connections = Hatterston_Path[0..];
-
-    const worldLocations = [_]world.Location{ Hatterston, PurpleRidgeCity };
+    //const worldLocations = world.generateCampaignWorld();
 
     try stdout.print("Initializing World Map...\n", .{});
-    var Map = world.WorldMap{ .locations = worldLocations[0..] };
+    //var Map = world.WorldMap{ .locations = worldLocations[0..] };
+    var Map = world.WorldMap{};
+    Map.init();
     Map.currentLocation = &Map.locations[0];
-    Map.printLocationBrief();
 
-    try stdout.print("Testing first move...\n", .{});
-    Map.travelToFirstConn();
-    Map.printLocationBrief();
+    try stdout.print("Testing all locations...\n", .{});
+    Map.printAllLocations();
 }
