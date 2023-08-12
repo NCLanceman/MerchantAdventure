@@ -34,9 +34,11 @@ pub const WorldMap = struct {
     currentLocation: *const Location = undefined,
     locations: []const Location = undefined,
 
-    pub fn init(self: *WorldMap) void {
-        generateCampaignWorld();
-        self.locations = &[_]Location{ a, b, c, d, e, f, g, h, i, j };
+    const allocator = std.heap.page_allocator;
+
+    pub fn init(self: *WorldMap) !void {
+        //self.locations = &[_]Location{ a, b, c, d, e, f, g, h, i, j };
+        self.locations = try generateCampaignWorld(allocator);
         self.currentLocation = &self.locations[0];
     }
 
@@ -50,6 +52,7 @@ pub const WorldMap = struct {
 
     //TODO: Add method for traversing from the current location to a new one.
     pub fn travelToFirstConn(self: *WorldMap) void {
+        generateCampaignWorld();
         self.currentLocation = self.currentLocation.connections[0].dest;
     }
 
@@ -60,7 +63,7 @@ pub const WorldMap = struct {
     }
 };
 
-pub fn generateCampaignWorld() void {
+pub fn generateCampaignWorld(allocator: std.mem.Allocator) ![]Location {
     a = makeLoc("Hatterston", Biome.temperateForest, 500);
     b = makeLoc("Purple Ridge City", Biome.borealForest, 1200);
     c = makeLoc("Burgsbergs", Biome.tundra, 400);
@@ -82,22 +85,21 @@ pub fn generateCampaignWorld() void {
     const h_conn = [_]Connection{makeConnect(&h, &j, 8, Difficulty.exhausting)};
     const i_conn = [_]Connection{makeConnect(&i, &j, 5, Difficulty.difficult)};
 
-    a.connections = a_conn[0..];
-    b.connections = b_conn[0..];
-    c.connections = c_conn[0..];
-    d.connections = d_conn[0..];
-    e.connections = e_conn[0..];
-    f.connections = f_conn[0..];
-    g.connections = g_conn[0..];
-    h.connections = h_conn[0..];
-    i.connections = i_conn[0..];
+    a.setConnect(a_conn[0..]);
+    b.setConnect(b_conn[0..]);
+    c.setConnect(c_conn[0..]);
+    d.setConnect(d_conn[0..]);
+    e.setConnect(e_conn[0..]);
+    f.setConnect(f_conn[0..]);
+    g.setConnect(g_conn[0..]);
+    h.setConnect(h_conn[0..]);
+    i.setConnect(i_conn[0..]);
 
-    //Testing memory
+    //Pass World Map back to World Map
     const locArray = [_]Location{ a, b, c, d, e, f, g, h, i, j };
 
-    for (locArray) |loc| {
-        loc.print();
-    }
+    var copy = try allocator.dupe(Location, &locArray);
+    return copy;
 }
 
 //Elements of a town:
@@ -110,18 +112,36 @@ pub const Location = struct {
     name: [:0]const u8,
     biome: Biome,
     population: u32,
-    connections: []const Connection = undefined,
+    connections: ?[10]Connection = null,
+    connLimit: u8 = 0,
+
+    pub fn setConnect(self: *Location, connect: []const Connection) void {
+        var result: [10]Connection = undefined;
+        var idx: u8 = 0;
+        while (idx < connect.len) : (idx += 1) {
+            result[idx] = connect[idx];
+            self.connLimit += 1;
+        }
+        self.connections = result;
+    }
 
     pub fn print(self: Location) void {
         std.debug.print(
             \\Town Name: {s}
             \\Biome: {s}
             \\Population: {}
-            \\Connections:
+            \\Connections: 
         , .{ self.name, self.biome.toText(), self.population });
-        for (self.connections) |conn| {
-            std.debug.print("{s}\n", .{conn.dest.name});
+        if (self.connections != null) {
+            const connect = self.connections.?;
+            var idx: u8 = 0;
+            while (idx < self.connLimit) : (idx += 1) {
+                std.debug.print("{s}, ", .{connect[idx].dest.name});
+            }
+        } else {
+            std.debug.print("No Connections.\n", .{});
         }
+        std.debug.print("\n\n", .{});
     }
 };
 

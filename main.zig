@@ -89,7 +89,7 @@ pub fn main() !void {
     try stdout.print("Initializing World Map...\n", .{});
     //var Map = world.WorldMap{ .locations = worldLocations[0..] };
     var Map = world.WorldMap{};
-    Map.init();
+    try Map.init();
     Map.currentLocation = &Map.locations[0];
 
     try stdout.print("Testing all locations...\n", .{});
