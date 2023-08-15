@@ -7,30 +7,6 @@ const stdin = std.io.getStdIn().reader();
 
 const roller = utils.roller;
 
-fn askNum() !u8 {
-    //var result: u8 = undefined;
-
-    while (true) {
-        try stdout.print("Selection: ", .{});
-        const bare_line = try stdin.readUntilDelimiterAlloc(std.heap.page_allocator, '\n', 80);
-        defer std.heap.page_allocator.free(bare_line);
-
-        const line = std.mem.trim(u8, bare_line, "\r");
-
-        const result = std.fmt.parseInt(u8, line, 10) catch |err| switch (err) {
-            error.Overflow => {
-                try stdout.print("Number too large.\n", .{});
-                continue;
-            },
-            error.InvalidCharacter => {
-                try stdout.print("Invalid Character.\n", .{});
-                continue;
-            },
-        };
-        return result;
-    }
-}
-
 pub fn main() !void {
     try stdout.print("Hello, {s}!\n", .{"World"});
 
@@ -51,10 +27,10 @@ pub fn main() !void {
     try stdout.print("Testing Standard In...\n", .{});
     try stdout.print("Select number of dice between 1-10: \n", .{});
 
-    dieNum = try askNum();
+    dieNum = try utils.askNum();
 
     try stdout.print("Select type of dice from 4, 6, 8, 10, 12, or 20: \n", .{});
-    dieType = try askNum();
+    dieType = try utils.askNum();
 
     result = roller.dieThrow(dieNum, dieType);
     resultSet = roller.retSet();
@@ -94,4 +70,7 @@ pub fn main() !void {
 
     try stdout.print("Testing all locations...\n", .{});
     Map.printAllLocations();
+
+    //Testing Connect Selector
+    try Map.selectNextDestination();
 }

@@ -2,6 +2,8 @@
 //File for storing utility functions
 
 const std = @import("std");
+const stdout = std.io.getStdOut().writer();
+const stdin = std.io.getStdIn().reader();
 
 pub const roller = struct {
     var diceSet: [10]u8 = undefined;
@@ -54,3 +56,27 @@ pub const roller = struct {
         x.* = 0;
     }
 };
+
+pub fn askNum() !u8 {
+    //var result: u8 = undefined;
+
+    while (true) {
+        try stdout.print("Selection: ", .{});
+        const bare_line = try stdin.readUntilDelimiterAlloc(std.heap.page_allocator, '\n', 80);
+        defer std.heap.page_allocator.free(bare_line);
+
+        const line = std.mem.trim(u8, bare_line, "\r");
+
+        const result = std.fmt.parseInt(u8, line, 10) catch |err| switch (err) {
+            error.Overflow => {
+                try stdout.print("Number too large.\n", .{});
+                continue;
+            },
+            error.InvalidCharacter => {
+                try stdout.print("Invalid Character.\n", .{});
+                continue;
+            },
+        };
+        return result;
+    }
+}
