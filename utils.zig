@@ -69,7 +69,7 @@ pub fn askNum() !u8 {
 
         const result = std.fmt.parseInt(u8, line, 10) catch |err| switch (err) {
             error.Overflow => {
-                try stdout.print("Number too large.\n", .{});
+                try stdout.print("Number out of bounds.\n", .{});
                 continue;
             },
             error.InvalidCharacter => {

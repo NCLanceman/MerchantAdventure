@@ -1,6 +1,7 @@
 const std = @import("std");
 const utils = @import("utils.zig");
 const world = @import("world.zig");
+const character = @import("character.zig");
 
 const stdout = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
@@ -46,7 +47,7 @@ pub fn main() !void {
     world.Calendar.addDay(15);
     try world.Calendar.printDate();
 
-    try stdout.print("Adding one hundred days...\n", .{});
+    try stdout.print("Adding fifty days...\n", .{});
     world.Calendar.addDay(50);
     try world.Calendar.printDate();
 
@@ -73,4 +74,9 @@ pub fn main() !void {
 
     //Testing Connect Selector
     try Map.selectNextDestination();
+
+    //Testing Character
+    const playerCharacter = character.Character;
+    playerCharacter.init();
+    try playerCharacter.printCharacterSheet();
 }
