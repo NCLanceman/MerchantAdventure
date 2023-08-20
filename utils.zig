@@ -5,19 +5,19 @@ const std = @import("std");
 const stdout = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
 
-pub const roller = struct {
-    var diceSet: [10]u8 = undefined;
-    var randGen: std.rand.Xoshiro256 = undefined;
+pub const Roller = struct {
+    diceSet: [10]u8 = undefined,
+    randGen: std.rand.Xoshiro256 = undefined,
 
-    pub fn init() !void {
-        randGen = std.rand.DefaultPrng.init(blk: {
+    pub fn init(self: *Roller) !void {
+        self.randGen = std.rand.DefaultPrng.init(blk: {
             var seed: u64 = undefined;
             try std.os.getrandom(std.mem.asBytes(&seed));
             break :blk seed;
         });
     }
 
-    pub fn dieThrow(diceNum: u8, diceType: u8) u8 {
+    pub fn dieThrow(self: *Roller, diceNum: u8, diceType: u8) u8 {
         var i: u8 = 0;
         var result: u8 = 0;
         var setDice: u8 = undefined;
@@ -33,22 +33,22 @@ pub const roller = struct {
         }
 
         while (i < diceNum) : (i += 1) {
-            diceSet[i] = randGen.random().intRangeAtMost(u8, 1, setDice);
-            result += diceSet[i];
+            self.diceSet[i] = self.randGen.random().intRangeAtMost(u8, 1, setDice);
+            result += self.diceSet[i];
         }
 
         return result;
     }
 
-    pub fn retSet() [10]u8 {
-        return diceSet;
+    pub fn retSet(self: *Roller) [10]u8 {
+        return self.diceSet;
     }
 
-    pub fn reset() void {
+    pub fn reset(self: *Roller) void {
         var i: u8 = 0;
 
-        while (i < diceSet.len) : (i += 1) {
-            zeroOut(&diceSet[i]);
+        while (i < self.diceSet.len) : (i += 1) {
+            zeroOut(&self.diceSet[i]);
         }
     }
 

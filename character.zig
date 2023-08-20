@@ -10,10 +10,13 @@ pub const Character = struct {
     gold: u16 = 100,
 
     //basic stats
+    //Physical
     st: u8 = undefined,
     dx: u8 = undefined,
+    //Mental
     in: u8 = undefined,
     pe: u8 = undefined,
+    //Spiritual
     ch: u8 = undefined,
     wp: u8 = undefined,
 
@@ -34,12 +37,12 @@ pub const Character = struct {
     persuade: u8 = 0,
     cajole: u8 = 0,
 
-    pub fn init(self: *Character) void {
+    pub fn init(self: *Character, roller: *utils.Roller) void {
         self.name = "Merchant";
-        initStats();
+        self.initStats(roller);
     }
 
-    fn initStats(self: *Character, roller: utils.roller) void {
+    fn initStats(self: *Character, roller: *utils.Roller) void {
         self.st = roller.dieThrow(2, 6);
         self.dx = roller.dieThrow(2, 6);
         self.in = roller.dieThrow(2, 6);
@@ -81,6 +84,7 @@ pub const Character = struct {
             \\--navigation {}, command {}, tactics {}
             \\-Social
             \\--persuade {}, cajole {}
+            \\
         , .{ self.name, self.hp, self.xp, self.st, self.dx, self.in, self.pe, self.ch, self.wp, self.melee, self.ranged, self.unarmed, self.appraisal, self.navigation, self.command, self.tactics, self.persuade, self.cajole });
     }
 };

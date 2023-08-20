@@ -6,7 +6,7 @@ const character = @import("character.zig");
 const stdout = std.io.getStdOut().writer();
 const stdin = std.io.getStdIn().reader();
 
-const roller = utils.roller;
+var roller: utils.Roller = undefined;
 
 pub fn main() !void {
     try stdout.print("Hello, {s}!\n", .{"World"});
@@ -76,7 +76,7 @@ pub fn main() !void {
     try Map.selectNextDestination();
 
     //Testing Character
-    const playerCharacter = character.Character;
-    playerCharacter.init();
-    try playerCharacter.printCharacterSheet();
+    var Player = character.Character{};
+    Player.init(&roller);
+    try Player.printCharacterSheet();
 }
