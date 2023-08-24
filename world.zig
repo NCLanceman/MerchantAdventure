@@ -62,20 +62,22 @@ pub const WorldMap = struct {
         }
     }
 
-    pub fn selectNextDestination(self: *WorldMap) !void {
+    pub fn selectNextDestination(self: *WorldMap) !u16 {
         var selectionMade: bool = false;
         var selection: u8 = undefined;
+        var distance: u16 = undefined;
 
         try stdout.print("Select Next Destination: \n", .{});
         const connect = self.currentLocation.connections.?;
         var idx: u8 = 0;
         while (idx < self.currentLocation.connLimit) : (idx += 1) {
-            try stdout.print("{}. {s}\n", .{ idx, connect[idx].dest.name });
+            try stdout.print("{}. {s}, a {} day journey.\n", .{ idx, connect[idx].dest.name, connect[idx].distance });
         }
         try stdout.print("Make Selection: ", .{});
         while (!selectionMade) {
             selection = try utils.askNum();
             if (selection < self.currentLocation.connLimit) {
+                distance = connect[selection].distance;
                 selectionMade = true;
             } else {
                 try stdout.print("Invalid Selection, Try Again.\n", .{});
@@ -85,6 +87,7 @@ pub const WorldMap = struct {
         self.currentLocation = connect[selection].dest;
         try stdout.print("Moving to new Location...\n", .{});
         self.currentLocation.print();
+        return distance;
     }
 };
 
