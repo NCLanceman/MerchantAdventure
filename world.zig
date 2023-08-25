@@ -62,7 +62,7 @@ pub const WorldMap = struct {
         }
     }
 
-    pub fn selectNextDestination(self: *WorldMap) !u16 {
+    pub fn selectNextDestination(self: *WorldMap) !void {
         var selectionMade: bool = false;
         var selection: u8 = undefined;
         var distance: u16 = undefined;
@@ -87,7 +87,7 @@ pub const WorldMap = struct {
         self.currentLocation = connect[selection].dest;
         try stdout.print("Moving to new Location...\n", .{});
         self.currentLocation.print();
-        return distance;
+        Calendar.addDay(distance);
     }
 };
 
@@ -314,6 +314,10 @@ pub const Calendar = struct {
 
     pub fn printDate() !void {
         try stdout.print("Day: {}, Year: {}, Season: {s}\n", .{ currentDay, currentYear, currentSeason });
+        try stdout.print("The date is {s} {}, {}\n", .{ getMonth(), getDay(), currentYear });
+    }
+
+    pub fn printDateSimple() !void {
         try stdout.print("The date is {s} {}, {}\n", .{ getMonth(), getDay(), currentYear });
     }
 };

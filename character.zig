@@ -5,6 +5,7 @@ const stdout = std.io.getStdOut().writer();
 
 pub const Character = struct {
     name: [:0]const u8 = "Merchant",
+    level: u8 = 1,
     xp: u8 = 0,
     hp: u8 = 10,
     gold: u16 = 100,
@@ -40,6 +41,8 @@ pub const Character = struct {
     pub fn init(self: *Character, roller: *utils.Roller) void {
         self.name = "Merchant";
         self.initStats(roller);
+        self.deriveStats();
+        self.calculateTraits();
     }
 
     fn initStats(self: *Character, roller: *utils.Roller) void {
@@ -65,9 +68,16 @@ pub const Character = struct {
         self.cajole = self.ch + self.st;
     }
 
+    pub fn calculateTraits(self: *Character) void {
+        self.health = self.st + self.dx + self.wp;
+        self.insight = self.in + self.pe + self.level;
+        self.bravery = self.ch + self.wp + self.level;
+    }
+
     pub fn printCharacterSheet(self: *Character) !void {
         try stdout.print(
             \\Name: {s}
+            \\Level: {}
             \\HP: {}
             \\XP: {}
             \\
@@ -75,9 +85,12 @@ pub const Character = struct {
             \\ST: {}, DX: {}, IN: {}
             \\PE: {}, CH: {}, WP: {}
             \\
+            \\Traits:
+            \\Health: {}, Insight: {}, Bravery: {}
+            \\
             \\Skills: 
             \\-Combat
-            \\--melee {}, ranged {}, unarmed{}
+            \\--melee {}, ranged {}, unarmed {}
             \\-Cultural
             \\--appraisal {}, culture N/A
             \\-Officer
@@ -85,6 +98,11 @@ pub const Character = struct {
             \\-Social
             \\--persuade {}, cajole {}
             \\
-        , .{ self.name, self.hp, self.xp, self.st, self.dx, self.in, self.pe, self.ch, self.wp, self.melee, self.ranged, self.unarmed, self.appraisal, self.navigation, self.command, self.tactics, self.persuade, self.cajole });
+        , .{ self.name, self.level, self.hp, self.xp, 
+            self.st, self.dx, self.in, self.pe, self.ch, self.wp, 
+            self.health, self.insight, self.bravery, 
+            self.melee, self.ranged, self.unarmed, 
+            self.appraisal, 
+            self.navigation, self.command, self.tactics, self.persuade, self.cajole });
     }
 };

@@ -19,20 +19,19 @@ pub fn main() !void {
     //Test World
     try stdout.print("Initializing World Map...\n", .{});
     var Map = world.WorldMap{};
-    var days: u16 = undefined;
     try Map.init();
     Map.currentLocation = &Map.locations[0];
 
-    try stdout.print("Testing all locations...\n", .{});
-    Map.printAllLocations();
-
     //Testing Connect Selector
-    days = try Map.selectNextDestination();
-    world.Calendar.addDay(days);
+    try Map.selectNextDestination();
     try world.Calendar.printDate();
 
     //Testing Character
+    try stdout.print("Testing Character...\n", .{});
     var Player = character.Character{};
     Player.init(&roller);
     try Player.printCharacterSheet();
+
+    //Testing Game Loop
+    //try game.dayLoop(&Map);
 }
