@@ -15,6 +15,8 @@ pub fn main() !void {
     //Test Calendar
     try stdout.print("Testing new calendar...\n", .{});
     try world.Calendar.printDate();
+    world.Calendar.addTime(3);
+    try world.Calendar.printDate();
 
     //Test World
     try stdout.print("Initializing World Map...\n", .{});

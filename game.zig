@@ -3,6 +3,7 @@
 
 const std = @import("std");
 const world = @import("world.zig");
+const character = @import("character.zig");
 
 const stdout = std.io.getStdOut().writer();
 
@@ -33,4 +34,12 @@ pub fn dayLoop(map: *world.WorldMap) !void {
     try map.selectNextDestination();
     world.Calendar.addDay(days);
     try stdout.print("Welcome to {s}!\n", .{map.currentLocation.name});
+}
+
+pub fn merchantLoop(PC: *character.Character) void{
+    //For a given day, roll Appraisal and Persuade
+    //Add both and multiply by 5 GP for a result.
+
+    var tradeMod: u8  = PC.cajole + PC.appraisal;
+    _ = tradeMod;
 }

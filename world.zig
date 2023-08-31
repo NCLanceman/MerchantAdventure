@@ -254,8 +254,39 @@ pub const Climate = struct {
 //YOU CANNOT HAVE A MEANINGFUL CAMPAIGN IF STRICT TIME KEEPING IS NOT OBSERVED.
 //Note: A year in this game world is 420 Days, with 15 months of four weeks of
 //seven days each. Each season, incidentally is fifteen weeks long.
+pub const TimeOfDay = enum {
+    Dawn, //04:00-07:59
+    Morning, //08:00-11:59
+    Afternoon, //12:00-15:59
+    Dusk, //16:00-19:59
+    Night, //20:00-23:59
+    LateNight, //00:00-03:59
+
+    pub fn toText(self: TimeOfDay) [:0]const u8 {
+        switch (self) {
+            TimeOfDay.Dawn => return "Dawn",
+            TimeOfDay.Morning => return "Morning",
+            TimeOfDay.Afternoon => return "Afternoon",
+            TimeOfDay.Dusk => return "Dusk",
+            TimeOfDay.Night => return "Night",
+            TimeOfDay.LateNight => return "Late Night",
+        }
+    }
+
+    pub fn nextTick(self: TimeOfDay) TimeOfDay {
+        switch (self) {
+            TimeOfDay.Dawn => return TimeOfDay.Morning,
+            TimeOfDay.Morning => return TimeOfDay.Afternoon,
+            TimeOfDay.Afternoon => return TimeOfDay.Dusk,
+            TimeOfDay.Dusk => return TimeOfDay.Night,
+            TimeOfDay.Night => return TimeOfDay.LateNight,
+            TimeOfDay.LateNight => return TimeOfDay.Dawn,
+        }
+    }
+};
 
 pub const Calendar = struct {
+    var currentTime: TimeOfDay = TimeOfDay.Dawn;
     var currentDay: u16 = 1;
     var currentYear: u16 = 1240;
     var currentSeason: [:0]const u8 = "Spring";
@@ -300,6 +331,20 @@ pub const Calendar = struct {
         currentSeason = getSeason();
     }
 
+    pub fn addTime(ticks: u8) void {
+        var placeholder: u8 = ticks;
+        if (placeholder <= 0) {
+            unreachable;
+        } else {
+            while (placeholder > 0) : (placeholder -= 1) {
+                if (currentTime == TimeOfDay.LateNight) {
+                    addDay(1);
+                }
+                currentTime = currentTime.nextTick();
+            }
+        }
+    }
+
     fn getSeason() [:0]const u8 {
         var result: u16 = currentDay / 105;
 
@@ -313,11 +358,11 @@ pub const Calendar = struct {
     }
 
     pub fn printDate() !void {
-        try stdout.print("Day: {}, Year: {}, Season: {s}\n", .{ currentDay, currentYear, currentSeason });
-        try stdout.print("The date is {s} {}, {}\n", .{ getMonth(), getDay(), currentYear });
+        try stdout.print("Time: {s},  Day: {}, Year: {}, Season: {s}\n", .{ currentTime.toText(), currentDay, currentYear, currentSeason });
+        try stdout.print("It is the {s} of {s} {}, {}\n", .{ currentTime.toText(), getMonth(), getDay(), currentYear });
     }
 
     pub fn printDateSimple() !void {
-        try stdout.print("The date is {s} {}, {}\n", .{ getMonth(), getDay(), currentYear });
+        try stdout.print("It is the {s} of {s} {}, {}\n", .{ currentTime.toText(), getMonth(), getDay(), currentYear });
     }
 };
