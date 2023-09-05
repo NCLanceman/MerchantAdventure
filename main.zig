@@ -35,5 +35,5 @@ pub fn main() !void {
     try Player.printCharacterSheet();
 
     //Testing Game Loop
-    //try game.dayLoop(&Map);
+    try game.dayLoop(&Map, &Player, &roller);
 }

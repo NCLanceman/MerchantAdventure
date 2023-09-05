@@ -61,7 +61,7 @@ pub fn askNum() !u8 {
     //var result: u8 = undefined;
 
     while (true) {
-        try stdout.print("Selection: ", .{});
+        try stdout.print("\nSelection: ", .{});
         const bare_line = try stdin.readUntilDelimiterAlloc(std.heap.page_allocator, '\n', 80);
         defer std.heap.page_allocator.free(bare_line);
 

@@ -8,7 +8,7 @@ pub const Character = struct {
     level: u8 = 1,
     xp: u8 = 0,
     hp: u8 = 10,
-    gold: u16 = 100,
+    gold: i16 = 100,
 
     //basic stats
     //Physical
@@ -98,11 +98,6 @@ pub const Character = struct {
             \\-Social
             \\--persuade {}, cajole {}
             \\
-        , .{ self.name, self.level, self.hp, self.xp, 
-            self.st, self.dx, self.in, self.pe, self.ch, self.wp, 
-            self.health, self.insight, self.bravery, 
-            self.melee, self.ranged, self.unarmed, 
-            self.appraisal, 
-            self.navigation, self.command, self.tactics, self.persuade, self.cajole });
+        , .{ self.name, self.level, self.hp, self.xp, self.st, self.dx, self.in, self.pe, self.ch, self.wp, self.health, self.insight, self.bravery, self.melee, self.ranged, self.unarmed, self.appraisal, self.navigation, self.command, self.tactics, self.persuade, self.cajole });
     }
 };
