@@ -204,6 +204,17 @@ pub const Difficulty = enum {
     difficult,
     exhausting,
     impossible,
+
+    pub fn getDC(self: Difficulty) i8 {
+        switch (self) {
+            Difficulty.easy => return 10,
+            Difficulty.marginal => return 5,
+            Difficulty.ordinary => return 0,
+            Difficulty.difficult => return -5,
+            Difficulty.exhausting => return -10,
+            Difficulty.impossible => return -15,
+        }
+    }
 };
 //Features
 //Seasons and Clock

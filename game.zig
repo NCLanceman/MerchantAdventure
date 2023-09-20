@@ -8,6 +8,14 @@ const utils = @import("utils.zig");
 
 const stdout = std.io.getStdOut().writer();
 
+pub const GameState = struct {
+    player: character.Character,
+    party: [20]character.Character,
+    date: u8,
+    time: world.TimeOfDay,
+    //TODO: Add a way to track location
+};
+
 //game loop
 //Get to town
 //Introduce player to town
@@ -79,4 +87,23 @@ pub fn merchantLoop(PC: *character.Character, roller: *utils.Roller) !void {
     try stdout.print("Earnings for this day are {}...\n", .{earnings});
     PC.gold += earnings;
     try stdout.print("Current Gold is {}...\n", .{PC.gold});
+}
+
+pub fn travelLoop(PC: *character, Days: u8, Connection: *world.Connection, roller: *utils.Roller) !void {
+    //Every day of travel, roll to see if a hazard occurs
+    //Simple: If hazard occurs, roll
+    //Complex: Move into the battle system (TODO)
+    const difficulty: i8 = Connection.terrain.getDC();
+    var result: i8 = 0;
+    var travelDays: u8 = Days;
+
+    while (travelDays > 0) : (travelDays -= 1) {
+        try stdout.print("Day {} of Travel of an expected {} trip...", .{ travelDays, Days });
+        result = roller.dieThrow(1, 20) + difficulty;
+        if (result < PC.unarmed) {
+            try stdout.print("Hazard Check failed. Add combat check here.\n", .{});
+        } else {
+            try stdout.print("Hazard Check passed.\n", .{});
+        }
+    }
 }
