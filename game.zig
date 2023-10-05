@@ -27,6 +27,7 @@ pub const GameState = struct {
 
 pub fn dayLoop(map: *world.WorldMap, PC: *character.Character, roller: *utils.Roller) !void {
     var nextConnection: *const world.Connection = undefined;
+    var tripSuccess: bool = false;
 
     //Welcome message
     try stdout.print("Welcome to {s}!\n", .{map.currentLocation.name});
@@ -45,7 +46,12 @@ pub fn dayLoop(map: *world.WorldMap, PC: *character.Character, roller: *utils.Ro
     try stdout.print("Select Destination: \n", .{});
     //try map.selectNextDestination();
     nextConnection = try map.selectNextDestination();
-    try travelLoop(PC, nextConnection, roller);
+    tripSuccess = try travelLoop(PC, nextConnection, roller);
+    if (tripSuccess) {
+        try stdout.print("Welcome to {s}!\n", .{map.CurrentLocation.name});
+    } else {
+        try stdout.print("Game Over.\n", .{});
+    }
     world.Calendar.addDay(days);
     try stdout.print("Welcome to {s}!\n", .{map.currentLocation.name});
 }
@@ -93,22 +99,27 @@ pub fn merchantLoop(PC: *character.Character, roller: *utils.Roller) !void {
     try stdout.print("Current Gold is {}...\n", .{PC.gold});
 }
 
-pub fn travelLoop(PC: *character.Character, Connection: *const world.Connection, roller: *utils.Roller) !void {
+pub fn travelLoop(PC: *character.Character, Connection: *const world.Connection, roller: *utils.Roller) !bool {
     //Every day of travel, roll to see if a hazard occurs
     //Simple: If hazard occurs, roll
     //Complex: Move into the battle system (TODO)
     const difficulty: i8 = Connection.terrain.getDC();
     var result: i16 = 0;
-    var travelDays: u16 = Connection.distance;
+    var distance: u16 = Connection.distance;
+    var daysTravelled: u16 = 0;
 
-    while (travelDays > 0) : (travelDays -= 1) {
-        try stdout.print("Day {} of Travel of an expected {} trip...", .{ travelDays, Connection.dest });
+    while (distance > 0) : (daysTravelled += 1) {
+        try stdout.print("Day {} of Travel of an expected {} trip...", .{ daysTravelled, Connection.distance });
         result = (@as(i16, roller.dieThrow(1, 20)) + difficulty);
         if (result < PC.unarmed) {
-            try stdout.print("Hazard Check failed. Add combat check here.\n", .{});
+            try stdout.print("Hazard Check failed. No progress gained. Add combat check here.\n", .{});
         } else {
             try stdout.print("Hazard Check passed.\n", .{});
+            distance -= 1;
         }
     }
-    try stdout.print("Checks passed! You've arrived!", .{});
+    //Determine trip success or failure.
+    //TODO: Add failure
+    try stdout.print("Checks passed! You've arrived!\n", .{});
+    return true;
 }
