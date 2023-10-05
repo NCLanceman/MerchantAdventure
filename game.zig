@@ -26,6 +26,8 @@ pub const GameState = struct {
 //Load new town
 
 pub fn dayLoop(map: *world.WorldMap, PC: *character.Character, roller: *utils.Roller) !void {
+    var nextConnection: *const world.Connection = undefined;
+
     //Welcome message
     try stdout.print("Welcome to {s}!\n", .{map.currentLocation.name});
     try world.Calendar.printDateSimple();
@@ -41,7 +43,9 @@ pub fn dayLoop(map: *world.WorldMap, PC: *character.Character, roller: *utils.Ro
     try world.Calendar.printDateSimple();
     try stdout.print("It is time to go.\n", .{});
     try stdout.print("Select Destination: \n", .{});
-    try map.selectNextDestination();
+    //try map.selectNextDestination();
+    nextConnection = try map.selectNextDestination();
+    try travelLoop(PC, nextConnection, roller);
     world.Calendar.addDay(days);
     try stdout.print("Welcome to {s}!\n", .{map.currentLocation.name});
 }
@@ -89,21 +93,22 @@ pub fn merchantLoop(PC: *character.Character, roller: *utils.Roller) !void {
     try stdout.print("Current Gold is {}...\n", .{PC.gold});
 }
 
-pub fn travelLoop(PC: *character, Days: u8, Connection: *world.Connection, roller: *utils.Roller) !void {
+pub fn travelLoop(PC: *character.Character, Connection: *const world.Connection, roller: *utils.Roller) !void {
     //Every day of travel, roll to see if a hazard occurs
     //Simple: If hazard occurs, roll
     //Complex: Move into the battle system (TODO)
     const difficulty: i8 = Connection.terrain.getDC();
-    var result: i8 = 0;
-    var travelDays: u8 = Days;
+    var result: i16 = 0;
+    var travelDays: u16 = Connection.distance;
 
     while (travelDays > 0) : (travelDays -= 1) {
-        try stdout.print("Day {} of Travel of an expected {} trip...", .{ travelDays, Days });
-        result = roller.dieThrow(1, 20) + difficulty;
+        try stdout.print("Day {} of Travel of an expected {} trip...", .{ travelDays, Connection.dest });
+        result = (@as(i16, roller.dieThrow(1, 20)) + difficulty);
         if (result < PC.unarmed) {
             try stdout.print("Hazard Check failed. Add combat check here.\n", .{});
         } else {
             try stdout.print("Hazard Check passed.\n", .{});
         }
     }
+    try stdout.print("Checks passed! You've arrived!", .{});
 }

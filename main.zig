@@ -25,8 +25,8 @@ pub fn main() !void {
     Map.currentLocation = &Map.locations[0];
 
     //Testing Connect Selector
-    try Map.selectNextDestination();
-    try world.Calendar.printDate();
+    //    try Map.selectNextDestination();
+    //    try world.Calendar.printDate();
 
     //Testing Character
     try stdout.print("Testing Character...\n", .{});
